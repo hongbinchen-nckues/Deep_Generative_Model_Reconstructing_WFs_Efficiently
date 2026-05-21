@@ -120,6 +120,124 @@ sudo make
 ```
 
 If successful, the CUDA device information will be displayed.
+---
 
+#### 10. Install cuDNN 8.0.4
+
+Download cuDNN 8.0.4 compatible with CUDA 11.0 from the NVIDIA Developer website.
+
+---
+
+#### 11. Extract cuDNN package
+
+Move to the download directory:
+
+```bash
+cd ~/Downloads
+```
+
+Extract the downloaded file:
+
+```bash
+tar -zxvf cudnn-11.0-linux-x64-v8.0.4.30.tgz
+```
+
+---
+
+#### 12. Copy cuDNN files to CUDA directory
+
+```bash
+sudo cp cuda/lib64/* /usr/local/cuda/lib64/
+
+sudo cp cuda/include/* /usr/local/cuda/include/
+
+sudo chmod a+r /usr/local/cuda/include/cudnn.h \
+/usr/local/cuda/lib64/libcudnn*
+```
+
+---
+
+#### 13. Verify cuDNN installation
+
+```bash
+cat /usr/local/cuda/include/cudnn_version.h | grep CUDNN_MAJOR -A 2
+```
+
+If successful, the installed cuDNN version information will be displayed.
+
+---
+
+#### 14. Install Anaconda (Python 3.7)
+
+The recommended Anaconda version for this project is:
+
+```text
+Anaconda3-5.3.1-Linux-x86_64.sh
+```
+
+Download from the official Anaconda archive:
+
+```text
+https://repo.anaconda.com/archive/
+```
+
+---
+
+#### 15. Run Anaconda installer
+
+Move to the download directory:
+
+```bash
+cd ~/Downloads
+```
+
+Run the installer:
+
+```bash
+sudo sh Anaconda3-5.3.1-Linux-x86_64.sh
+```
+
+---
+
+#### 16. Installation options
+
+During the installation process:
+
+- Most options can be answered with `yes`
+- Select `no` for Microsoft VSCode integration
+
+---
+
+#### 17. Check existing conda environments
+
+```bash
+conda env list
+```
+
+---
+
+#### 18. Create a new virtual environment
+
+```bash
+conda create --name tf_gpu python=3.7
+```
+
+You may replace `tf_gpu` with your preferred environment name.
+
+---
+
+#### 19. Activate the virtual environment
+
+```bash
+source activate tf_gpu
+```
+
+---
+
+#### 20. Verify installed packages
+
+```bash
+conda list
+```
 
 ## File Directory Description
