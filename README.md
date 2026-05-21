@@ -20,6 +20,8 @@
     
 ### Installation Steps
 1. Install Drivers
+   (1) Check recommended graphics card drivers
+   ubuntu-drivers devices
    
 
 ## File Directory Description
