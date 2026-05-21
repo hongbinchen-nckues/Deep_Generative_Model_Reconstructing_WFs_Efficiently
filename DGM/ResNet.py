@@ -79,9 +79,9 @@ class DeconvBlock(nn.Module):
         return out
 
 # ---------------------------
-# ResNet-152 
+# ResNet-184 
 # ---------------------------
-class _ResNet152DecoderCore(nn.Module):
+class _ResNet184DecoderCore(nn.Module):
     """
     In put ：Linear(latent_dim -> 8*8*2048) → reshape (B,2048,8,8)
     The main structure（conv2_x～conv5_x）：[3, 8, 36, 3, 3, 2]
@@ -197,10 +197,10 @@ class _ResNet152DecoderCore(nn.Module):
 
 
 
-class ResNet152Decoder1(nn.Module):
+class ResNet184Decoder1(nn.Module):
     def __init__(self, latent_dim: int):
         super().__init__()
-        self.core = _ResNet152DecoderCore(latent_dim, out_ch=1)
+        self.core = _ResNet184DecoderCore(latent_dim, out_ch=1)
     def forward(self, z):
         return self.core(z)
 
