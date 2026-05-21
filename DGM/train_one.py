@@ -14,20 +14,10 @@ from torch.optim import Adam
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 
 from scipy import integrate, interpolate
-
-# from model import ResNet_base_decoder, ResNet_base_decoder2, ResNet_base_decoder3, ResNet_base_decoder4
-from TF import  ResNetBaseDecoder, ResNetBaseDecoder2, ResNetBaseDecoder3, ResNetBaseDecoder4, ResNetBaseDecoder5, ResNetBaseDecoder6
-
 from ResNet import ResNet152Decoder1
-from ResNeXt_2 import ResNeXt50Decoder_32x4d, ResNeXt101Decoder_32x4d, ResNeXt152Decoder_32x4d
-from ResNeXt_3 import ResNeXt50Decoder_32x4d_fc, ResNeXt101Decoder_32x4d_fc, ResNeXt152Decoder_32x4d_fc
-from DenseNet import DenseNetDecoder169
 from cmap import rgb_cmap_inverse2, rgb_cmap_inverse3, rgb_cmap, rgb_cmap_inverse, rgb_cmap2, rgb_cmap4, rgb_cmap3
 
 
-# -----------------------
-# 小工具：把影像統一成 (H,W) 的標量場（僅用於視覺化與誤差計算）
-# -----------------------
 def _to_scalar_field(arr, vmin, vmax):
     arr = np.asarray(arr)
     if arr.ndim == 3 and arr.shape[-1] == 1:
@@ -36,10 +26,6 @@ def _to_scalar_field(arr, vmin, vmax):
         arr = rgb_cmap_inverse2(arr, vmin, vmax)
     return arr.astype(np.float32)
 
-
-# =============================
-# integrating2：完全比照第一版（TensorFlow）流程
-# =============================
 def integrating2(y_pred, vmin, vmax, step, point, channel):
     """
     與第一版 (TF) 完全等價的積分流程：
@@ -56,7 +42,7 @@ def integrating2(y_pred, vmin, vmax, step, point, channel):
 
     three_axis_pred = []
     for t in range(y_pred.shape[0]):
-        # 與第一版一致的通道處理
+   
         if channel == 1:
             z = y_pred[t]
         else:
@@ -70,29 +56,27 @@ def integrating2(y_pred, vmin, vmax, step, point, channel):
         if z.dtype not in (np.uint8, np.float32, np.float64):
             z = z.astype(np.float32)
 
-        # 與第一版一致的 resize + blur
         z = cv2.resize(z, (256, 256))
         z = cv2.GaussianBlur(z, (9, 9), 1.5)
-
-        # 若仍是 3 通道，轉回標量
+        
         if z.ndim == 3 and z.shape[-1] == 3:
             z = rgb_cmap_inverse2(z, vmin, vmax)
 
-        # x 軸（沿 columns）
+
         x_s = []
         for i in range(z.shape[0]):
             x_z = integrate.simpson(z[:, i]) * we
             x_s.append(x_z)
         x_s = np.array(x_s)
 
-        # y 軸（沿 rows）
+
         y_s = []
         for i in range(z.shape[1]):
             y_z = integrate.simpson(z[i, :]) * we
             y_s.append(y_z)
         y_s = np.array(y_s)
 
-        # u 軸（對角線）
+
         z_s = []
         n1 = [i for i in range(1, num + 1, 2)]
         n2 = [i for i in range(num - 1, -1, -2)]
@@ -115,7 +99,7 @@ def integrating2(y_pred, vmin, vmax, step, point, channel):
 
         z_s = np.array(z_s)
 
-        # 與第一版一致的插值座標
+
         mlin = np.linspace(-step, step, 256)
         mlin2 = np.linspace(-step, step, point)
         mfx = interpolate.interp1d(mlin, x_s, kind="linear")
@@ -133,9 +117,7 @@ def integrating2(y_pred, vmin, vmax, step, point, channel):
     three_axis_pred = three_axis_pred.reshape(three_axis_pred.shape[0], three_axis_pred.shape[1], 1)
     return three_axis_pred
 
-# =============================
-# 資料檢查 / 過濾工具
-# =============================
+
 def _has_bad_values(arr):
     arr = np.asarray(arr)
     return np.isnan(arr).any() or np.isinf(arr).any()
@@ -150,10 +132,10 @@ def _too_large(arr, max_abs=1e6):
 
 def filter_bad_samples(x_data, y_data, max_abs=1e6, verbose=True):
     """
-    自動過濾掉：
-    1. x 或 y 含 NaN / Inf
-    2. x 或 y 幾乎全零
-    3. x 或 y 數值過大
+    Automatic Filtering : 
+    1. x or y contains NaN/Inf
+    2. x or y is almost all zero
+    3. x or y is too large
     """
     good_idx = []
     bad_idx = []
@@ -195,10 +177,11 @@ def filter_bad_samples(x_data, y_data, max_abs=1e6, verbose=True):
 
 
 # =============================
-# 選模型（維持 channel==1 / 3 的行為）
+# choose model : 
+# In previous work, we also train a three tunnels model.
 # =============================
 def _pick_model(input_shape, channel):
-    # TF.py 的模型吃 flat 向量
+
     if isinstance(input_shape, tuple):
         input_dim = int(np.prod(input_shape))
     else:
@@ -249,8 +232,6 @@ def training2(
     print("y_train.shape is", y_train.shape)
 
     # =============================
-    # 訓練前先過濾壞樣本
-    # =============================
     x_train, y_train, good_idx, bad_idx = filter_bad_samples(
         x_train, y_train, max_abs=1e6, verbose=True
     )
@@ -294,13 +275,12 @@ def training2(
     flatten_input = len(input_shape) != 1
     print(model)
 
-    # --- 模擬 Keras: validation_split=0.2 ---
     N = len(x_train)
     idx = np.arange(N)
-    # Keras: shuffle=True 會在 split 前洗牌一次（這裡不固定 seed）
+
     np.random.seed(42)
     np.random.shuffle(idx)
-    split = int(np.floor(N * (1 - 0.2)))  # 前 80% 當訓練，後 20% 當驗證
+    split = int(np.floor(N * (1 - 0.4)))  # training / validation = 0.6 / 0.4
     tr_idx = idx[:split]
     va_idx = idx[split:]
 
@@ -440,7 +420,6 @@ def training2(
                 xb = xb.to(device, non_blocking=True)
                 yb = yb.to(device, non_blocking=True)
 
-                # ===== 先檢查 validation input =====
                 if torch.isnan(xb).any() or torch.isinf(xb).any():
                     print(f"⚠️ VAL batch {s // batch_size}: xb has NaN/Inf")
                     bad_val_batches += 1
@@ -483,7 +462,7 @@ def training2(
 
                     loss_va = criterion(pred_va, yb)
 
-                # ===== 再檢查 validation output / loss =====
+
                 if torch.isnan(pred_va).any() or torch.isinf(pred_va).any():
                     print(f"⚠️ VAL batch {s // batch_size}: pred_va has NaN/Inf")
                     print("pred range:", float(torch.min(pred_va)), float(torch.max(pred_va)))
@@ -525,7 +504,7 @@ def training2(
 
 
         # =============================
-        # 儲存最佳模型
+        # To save the best model .
         # =============================
         if not np.isnan(val_loss) and val_loss < best_val_loss:
             best_val_loss = val_loss
@@ -548,7 +527,7 @@ def training2(
             print(f"🌟 Best model saved: {best_model_path}")
 
         # =============================
-        # 儲存最新 checkpoint
+        # To save the newest checkpoint.
         # =============================
         if ep % save_every == 0:
             torch.save(
@@ -571,7 +550,6 @@ def training2(
 
 
 
-        # 存檔（沿用你的命名；建議可改 .pt/.pth）
     torch.save(
         {
             "state_dict": model.state_dict(),
@@ -594,13 +572,9 @@ def training2(
     plt.show()
 
 
-# =============================
-# 推論：讀/建模都用 .py（state_dict）
-# =============================
 def _load_model_for_infer(model_name, input_shape, channel, device):
     ckpt = torch.load(f"{model_name}.py", map_location=device)
 
-    # 去掉 _orig_mod. 前缀
     new_state_dict = {}
     for k, v in ckpt["state_dict"].items():
         new_key = k.replace("_orig_mod.", "")
@@ -614,7 +588,7 @@ def _load_model_for_infer(model_name, input_shape, channel, device):
     flatten_input = bool(ckpt.get("flatten_input", (len(saved_input_shape) != 1)))
 
     model = _pick_model(saved_input_shape, saved_channel).to(device)
-    model.load_state_dict(new_state_dict)  # 使用清洗后的 state_dict
+    model.load_state_dict(new_state_dict)  
     model.eval()
     return model, flatten_input
 
@@ -631,7 +605,6 @@ def prediction2(model_name, prediction_npy_name, x_test, y_test):
 
     input_shape = x_test[0].shape
 
-    # 依 y_test 猜 channel（沒提供就當 1）
     channel_infer = 1
     if isinstance(y_test, np.ndarray) and y_test.ndim == 4 and y_test.shape[-1] == 3:
         channel_infer = 3
@@ -662,9 +635,9 @@ def test_comparison2(
     image_num=5,
     vmin=-0.01,
     vmax=0.045,
-    point=2241,  # 與第一版一致
-    step=7,      # 與第一版一致
-    channel=1,   # 與第一版常用一致（RGB colormap）
+    point=2241,  
+    step=7,      
+    channel=1,   
     a=2,         # 0=TJCM test, 1=JCM test, 2=all test, 3=train1
 ):
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -696,7 +669,6 @@ def test_comparison2(
     y_test_path = os.path.join(path_combined_dataset, "y_test.npy")
     test_label_path = os.path.join(path_combined_dataset, "test_label.npy")
 
-    # image_num=5 時，後面畫圖最多會用到約 5*6 筆
     max_needed = max(image_num * 6, 1)
 
     if os.path.exists(x_test_path) and os.path.exists(y_test_path):
@@ -720,7 +692,7 @@ def test_comparison2(
 # ===========================================================================
 
 
-    # 讀 test label：0 = TJCM, 1 = JCM
+    # Load test label：0 = TJCM, 1 = JCM
     # test_label = np.load(os.path.join(path_combined_dataset, "test_label.npy"))
 
     test_label_path = os.path.join(path_combined_dataset, "test_label.npy")
@@ -734,7 +706,7 @@ def test_comparison2(
 
 
 # ==============================================================================
-    # # 依照 a 選資料
+    # # According to option a, select the data.
     # if a == 0:
     #     selected_idx = np.where(test_label == 0)[0]
     #     X = X_test[selected_idx]
@@ -770,7 +742,6 @@ def test_comparison2(
         selected_idx = np.arange(len(X_test_all))
         save_tag = "TRAIN_SUBSET"
 
-    # 關鍵：只取畫圖真正需要的資料量
     selected_idx = selected_idx[:min(max_needed, len(selected_idx))]
 
     X = np.asarray(X_test_all[selected_idx], dtype=np.float32)
@@ -845,7 +816,6 @@ def test_comparison2(
     y_pred = np.concatenate(y_pred_list, axis=0)
     # ==================================================================
 
-    # 輸出形狀修正
     if y_pred.ndim == 4 and y_pred.shape[1] == 1:
         y_pred = y_pred[:, 0, ...]
     elif y_pred.ndim == 4 and y_pred.shape[1] == 3:
@@ -869,17 +839,11 @@ def test_comparison2(
     print("input image_num =", image_num)
 
 # =============================================================================
-    # 每張大圖實際會用到的最大 index = 6*t + 4
-    # 若資料長度為 len(X)，安全的大圖數量是 floor((len(X)+1)/6)
     max_image_num = (len(X) + 1) // 6
     image_num = min(image_num, max_image_num)
 
     print("safe image_num =", image_num)
 # =============================================================================
-
-    # =========================================================
-    # 儲存最後展示圖對應的五種資料到 data_martix
-    # =========================================================
     save_root = os.path.join(front_path, "data_martix")
     if not os.path.exists(save_root):
         os.mkdir(save_root)
@@ -909,7 +873,7 @@ def test_comparison2(
             # ---------- 3. Absolute difference 2D Wigner matrix ----------
             abs_diff_matrix = np.abs(gt_matrix - pred_matrix)
 
-            # 建立對應的 x, p 座標
+
             coord = np.linspace(-step, step, 256)
             X_grid, P_grid = np.meshgrid(coord, coord)
 
@@ -993,7 +957,7 @@ def test_comparison2(
 
     for t in range(image_num):
         fig, ax = plt.subplots()
-        ax.set_axis_off()   # ← 關掉外層主軸（不影響子圖）
+        ax.set_axis_off()   
 
 
         pic1 = t * 6 + 1
@@ -1009,7 +973,6 @@ def test_comparison2(
             plt.subplot(6, pictrue_num, i + 2)
 # =============================================================================
             cmap = rgb_cmap3()
-            # 與第一版一致的色階範圍
             norm = mcolors.TwoSlopeNorm(vmin=-0.08, vcenter=0.0, vmax=0.11)
 
 
@@ -1032,7 +995,7 @@ def test_comparison2(
 
             plt.subplot(6, pictrue_num, i + pictrue_num + 2)
 
-             # L2（sum）差異
+             # L2（sum）Error
             gt = _to_scalar_field(Y[i + pic1 - 1], vmin, vmax)
             gt = np.nan_to_num(gt, nan=0.0, posinf=0.05, neginf=-0.05)
             gt = np.clip(gt, -0.05, 0.05)
@@ -1062,7 +1025,6 @@ def test_comparison2(
 
             plt.subplot(6, pictrue_num, i + 2 * pictrue_num + 2)
 
-            # 與原本 Pred 區塊一致：先轉成 scalar field，再做 nan / inf / clip
             gt = _to_scalar_field(Y[i + pic1 - 1], vmin, vmax)
             gt = np.nan_to_num(gt, nan=0.0, posinf=0.05, neginf=-0.05)
             gt = np.clip(gt, -0.05, 0.05)
@@ -1074,17 +1036,11 @@ def test_comparison2(
             # absolute difference
             error_map = np.abs(gt - pr_show)
 
-            # 避免 LogNorm 遇到 0 出錯
+
             positive_error = error_map[error_map > 0]
             if positive_error.size > 0:
                 vmin_log = max(np.min(positive_error), 1e-3)
                 vmax_log = max(np.max(error_map) * 1.2, vmin_log * 10)
-                # plt.imshow(
-                #     np.flip(error_map, 0),
-                #     cmap="binary",
-                #     norm=mcolors.LogNorm(vmin=vmin_log, vmax=vmax_log),
-                #     interpolation="none",
-                # )
 
                 im = plt.imshow(
                     np.flip(error_map, 0),
@@ -1111,10 +1067,6 @@ def test_comparison2(
             ax.axes.yaxis.set_visible(False)
             plt.axis("auto")
             
-            # if i == pictrue_num - 2:
-            #     pos = ax.get_position()
-            #     cax = fig.add_axes([pos.x1 + 0.02, pos.y0, 0.006, pos.height])
-            #     fig.colorbar(im, cax=cax)
 # ###--------------------------------------------------------------------------------------------------------------------------------------------------------------
             # === 三通道→標量；尺度對齊到 (256,256) 僅作檢查用 ===
             gt_scalar = _to_scalar_field(Y[i + pic1 - 1], vmin, vmax)   # (H,W) float32
@@ -1277,12 +1229,12 @@ def test_comparison2(
             dpi=2000,
         )
 
-        # 100 筆差`值輸出
+        # Output of 100 pen differences
         diff_values = {"diff": [], "diffx": [], "diffy": [], "diffu": []}
         N_eval = min(100, len(Y))
 
         for i in range(N_eval):
-            # --- 2D diff：與畫圖完全一致 ---
+
             gt = _to_scalar_field(Y[i], vmin, vmax)
             gt = np.nan_to_num(gt, nan=0.0, posinf=0.05, neginf=-0.05)
             gt = np.clip(gt, -0.05, 0.05)
@@ -1293,7 +1245,7 @@ def test_comparison2(
 
             diff = np.sqrt(np.sum((gt - pr_show) ** 2) / gt.size)
 
-            # --- marginal diff：與畫圖完全一致 ---
+
             diffx = np.mean(np.abs(
                 three_axis_gt[i][0:point] - three_axis_pred[i][0:point]
             ))
