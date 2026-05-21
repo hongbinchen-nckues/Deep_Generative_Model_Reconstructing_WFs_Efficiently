@@ -17,6 +17,9 @@
     Cuda: 11.0
     Cudnn: 8.0.4
     Python : 3.7
+    
 ### Installation Steps
+1. Install Drivers
+   
 
 ## File Directory Description
