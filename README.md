@@ -17,6 +17,7 @@
 - Cuda: 11.0
 - Cudnn: 8.0.4
 - Python : 3.7
+- Tensorflow : 2.4.0
     
 ### Installation Steps
 
