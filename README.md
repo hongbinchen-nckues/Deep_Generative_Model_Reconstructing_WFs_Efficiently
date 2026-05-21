@@ -1,5 +1,8 @@
 # Deep_Generative_Model_Reconstructing_WFs_Efficiently
 
+This project presents a deep generative model (DGM) framework for efficient reconstruction of quantum Wigner functions from experimentally accessible marginal distributions.
+The repository includes dataset generation, model training, testing, and visualization tools for MJCM and TMJCM quantum systems.
+
 ## Contents
 
 - [Getting Started](#getting-started)
@@ -11,14 +14,18 @@
 
 ## Getting Started
 
-### Configuration Requirements
+### Recommended Environment
+> **Note**
+>
+> Although the current system Python version is 3.13.7,  
+> Python 3.10 is recommended for better compatibility with scientific computing libraries and PyTorch-related dependencies.
 
-- OS: Ubuntu 18.04
-- NVIDIA Driver: 460
-- CUDA: 11.0
-- cuDNN: 8.0.4
-- Python: 3.7
-- TensorFlow: 2.4.0
+- OS: Ubuntu 22.04.5 LTS
+- NVIDIA Driver: 580.126.09
+- CUDA: 12.9
+- cuDNN: 9.10.2
+- Python: 3.13.7
+- PyTorch: 2.8.0+cu129
 
 ---
 
@@ -30,11 +37,11 @@
 ubuntu-drivers devices
 ```
 
-#### 2. Install NVIDIA Driver 460
+#### 2. Install NVIDIA Driver 580
 
 ```bash
 sudo apt update
-sudo apt install nvidia-driver-460
+sudo apt install nvidia-driver-580
 ```
 
 #### 3. Reboot the system
@@ -53,9 +60,9 @@ If successful, the GPU model and driver version will be displayed.
 
 ---
 
-#### 5. Install CUDA 11.0
+#### 5. Install CUDA 13.0
 
-Download CUDA 11.0 from the official NVIDIA CUDA Toolkit website.
+Download CUDA 13.0 from the official NVIDIA CUDA Toolkit website.
 
 ---
 
@@ -70,7 +77,7 @@ cd ~/Downloads
 Run the installer:
 
 ```bash
-sudo sh cuda_11.0.XXX_linux.run
+sudo sh cuda_13.0.XXX_linux.run
 ```
 
 ---
@@ -97,8 +104,8 @@ sudo gedit ~/.bashrc
 Add the following lines at the end of the file:
 
 ```bash
-export PATH=/usr/local/cuda-11.0/bin:$PATH
-export LD_LIBRARY_PATH=/usr/local/cuda-11.0/lib64:$LD_LIBRARY_PATH
+export PATH=/usr/local/cuda-13.0/bin:$PATH
+export LD_LIBRARY_PATH=/usr/local/cuda-13.0/lib64:$LD_LIBRARY_PATH
 ```
 
 Apply the changes:
@@ -122,9 +129,9 @@ sudo make
 If successful, the CUDA device information will be displayed.
 ---
 
-#### 10. Install cuDNN 8.0.4
+#### 10. Install cuDNN 9.10.2
 
-Download cuDNN 8.0.4 compatible with CUDA 11.0 from the NVIDIA Developer website.
+Download cuDNN 9.10.2 compatible with CUDA 13.0 from the NVIDIA Developer website.
 
 ---
 
@@ -139,7 +146,7 @@ cd ~/Downloads
 Extract the downloaded file:
 
 ```bash
-tar -zxvf cudnn-11.0-linux-x64-v8.0.4.30.tgz
+tar -zxvf cudnn-linux-x86_64-9.10.2_cuda13-archive.tar.xz
 ```
 
 ---
@@ -147,9 +154,9 @@ tar -zxvf cudnn-11.0-linux-x64-v8.0.4.30.tgz
 #### 12. Copy cuDNN files to CUDA directory
 
 ```bash
-sudo cp cuda/lib64/* /usr/local/cuda/lib64/
+sudo cp <extracted-folder>/lib/* /usr/local/cuda/lib64/
 
-sudo cp cuda/include/* /usr/local/cuda/include/
+sudo cp <extracted-folder>/include/* /usr/local/cuda/include/
 
 sudo chmod a+r /usr/local/cuda/include/cudnn.h \
 /usr/local/cuda/lib64/libcudnn*
@@ -167,21 +174,13 @@ If successful, the installed cuDNN version information will be displayed.
 
 ---
 
-#### 14. Install Anaconda (Python 3.7)
+#### 14. Install Anaconda
 
-The recommended Anaconda version for this project is:
-
-```text
-Anaconda3-5.3.1-Linux-x86_64.sh
-```
-
-Download from the official Anaconda archive:
+Download the latest Anaconda installer from:
 
 ```text
-https://repo.anaconda.com/archive/
+https://www.anaconda.com/download
 ```
-
----
 
 #### 15. Run Anaconda installer
 
@@ -219,17 +218,17 @@ conda env list
 #### 18. Create a new virtual environment
 
 ```bash
-conda create --name tf_gpu python=3.7
+conda create --name torch_gpu python=3.10
 ```
 
-You may replace `tf_gpu` with your preferred environment name.
+You may replace `torch_gpu` with your preferred environment name.
 
 ---
 
 #### 19. Activate the virtual environment
 
 ```bash
-source activate tf_gpu
+conda activate torch_gpu
 ```
 
 ---
@@ -240,4 +239,23 @@ source activate tf_gpu
 conda list
 ```
 
+#### 21. Install PyTorch
+
+Install PyTorch with CUDA 12.9 support:
+
+```bash
+pip install torch torchvision torchaudio
+```
+
+---
+
+#### 22. Verify PyTorch installation
+
+```bash
+python -c "import torch; print(torch.__version__)"
+
+python -c "import torch; print(torch.cuda.is_available())"
+```
+
+If successful, the installed PyTorch version and CUDA availability will be displayed.
 ## File Directory Description
