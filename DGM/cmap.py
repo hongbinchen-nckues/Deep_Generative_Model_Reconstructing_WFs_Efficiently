@@ -67,17 +67,15 @@ def rgb_cmap2(z, vmin, vmax):
 
 def rgb_cmap_inverse2(rgb, vmin, vmax):
     e = pow(10, -4)
-    
-    # 確保 OpenCV 可以處理的資料格式 (float32)
+
     if rgb.dtype != np.float32:
-        rgb = rgb.astype(np.float32)  # ⭐ 轉換為 float32
+        rgb = rgb.astype(np.float32)  
         
     rgb = np.clip(rgb, -1+e, 1-e)
     zero = (0 - vmin)/(vmax - vmin)
     r, g, b = cv2.split(rgb)
     
-    # ✅ 確保 g 不會有 NaN 或 Inf
-    g = np.clip(g, 1e-6, 1-e)  # 避免 log(0) 和 sqrt(負數)
+    g = np.clip(g, 1e-6, 1-e)  
     
     g1_r = np.sqrt(-np.log((g+1)/2)*(2*(0.14)**2)) + zero
     g1_l = -np.sqrt(-np.log((g+1)/2)*(2*(0.14)**2)) + zero
