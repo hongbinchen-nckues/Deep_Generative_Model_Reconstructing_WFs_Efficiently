@@ -31,5 +31,17 @@ ubuntu-drivers devices
 sudo apt update
 sudo apt install nvidia-driver-460
 ```
+#### 3. Reboot
+
+```bash
+sudo reboot
+```
+#### 4. Check status
+
+```bash
+nvidia-smi
+```
+If successful, the GPU model and driver version will be displayed.
+
 
 ## File Directory Description
