@@ -3,14 +3,9 @@ from tqdm import tqdm
 from sklearn.utils import shuffle
 import os
 from cmap import rgb_cmap2
-from scipy.ndimage import zoom
-import cv2
     
-def build_combined_data2(dataset_filename, train_filename, harmonic_num, coherent_num, cat_num, squeezed_num, fock_num, biphoton_num, Entanglement_num, TJCM_num, JCM_num, test_data_num = 150, split_num = 8, vmin = -0.01, vmax = 0.045, channel = 1):
-    # reading definition
-    # offset: number of files reserved for test at the start of the index range.
-    #   - TJCM / JCM : offset = test_each  (test indices 0 .. test_each-1 are held out)
-    #   - harmonic / others : offset = 0   (no test files reserved for these types)
+def build_combined_data2(dataset_filename, train_filename, TJCM_num, JCM_num, test_data_num = 150, split_num = 8, vmin = -0.01, vmax = 0.045, channel = 1):
+
     def read_type_data(distribution_num, type_filename, offset=0):
         x_train = list([])
         y_train1 = list([])
@@ -47,13 +42,6 @@ def build_combined_data2(dataset_filename, train_filename, harmonic_num, coheren
 
     # set load path of dataset
     osd = os.path.abspath(os.path.join(os.getcwd(), os.path.pardir))   
-    harmonic_filename = "distribution_harmonic"
-    coherent_filename = "distribution_coherent"
-    cat_filename = "distribution_cat"
-    squeezed_filename = "distribution_squeezed"
-    fock_filename = "distribution_fock"
-    biphoton_filename = "distribution_biphoton"
-    Entanglement_filename = "distribution_Entanglement"
     TJCM_filename ="full_distribution_TJCM"
     JCM_filename = "distribution_JCM"
 
@@ -73,13 +61,6 @@ def build_combined_data2(dataset_filename, train_filename, harmonic_num, coheren
     if os.path.exists(path_combined_dataset) == False:     
         os.mkdir(path_combined_dataset)
 
-    print("harmoic data number : ", harmonic_num)
-    print("coherent data number : ", coherent_num)
-    print("cat data number : ", cat_num)
-    print("squeezed data number : ", squeezed_num)
-    print("fock data number : ", fock_num)
-    print("biphoton data number : ", biphoton_num)
-    print("Entanglement data number : ", Entanglement_num)
     print("TJCM data number : ", TJCM_num)
     print("JCM data number : ", JCM_num)
 
@@ -105,9 +86,6 @@ def build_combined_data2(dataset_filename, train_filename, harmonic_num, coheren
     else:
         tjcm_test_num = 0
         jcm_test_num  = 0
-
-    # test_each is used as training-index offset for TJCM to avoid test/train overlap
-    test_each = tjcm_test_num
 
     def read_test_data(index_list, type_filename):
         x_test = []
@@ -171,41 +149,22 @@ def build_combined_data2(dataset_filename, train_filename, harmonic_num, coheren
     
     x_data_num = 0
     for k in range(split_num):
-        
-        # four training case
-        # 1. pure gauss 
-        # 2. pure gauss added noise
-        # 3. shifted pure gauss
-        # 4. shifted pure gauss added noise(limited)
 
 # =============================================================================
 #         1. choose states
 # =============================================================================
 
-        if harmonic_num == 0 :
-            # xn1_train, yn1_train = read_type_data(coherent_num, coherent_filename, offset=0)
-            # xn2_train, yn2_train = read_type_data(cat_num, cat_filename, offset=0)
-            # xn3_train, yn3_train = read_type_data(squeezed_num, squeezed_filename, offset=0)
-            # xn5_train, yn5_train = read_type_data(biphoton_num, biphoton_filename, offset=0)
-            # xn6_train, yn6_train = read_type_data(Entanglement_num, Entanglement_filename, offset=0)
-            xn7_train, yn7_train = read_type_data(TJCM_num, TJCM_filename, offset=test_each)
-            # xn8_train, yn8_train = read_type_data(JCM_num, JCM_filename, offset=test_each)
+        if TJCM_num == 0 :
+            xn1_train, yn1_train = read_type_data(JCM_num, JCM_filename,  offset=jcm_test_num)
 
-            x_train = xn7_train
-            y_train = yn7_train
+            x_train = xn1_train
+            y_train = yn1_train
         else:
-            x_train, y_train = read_type_data(harmonic_num, harmonic_filename, offset=0)
-            # xn1_train, yn1_train = read_type_data(coherent_num, coherent_filename, offset=0)
-            # xn2_train, yn2_train = read_type_data(cat_num, cat_filename, offset=0)
-            # xn3_train, yn3_train = read_type_data(squeezed_num, squeezed_filename, offset=0)
-            # xn4_train, yn4_train = read_type_data(fock_num, fock_filename, offset=0)
-            # xn5_train, yn5_train = read_type_data(biphoton_num, biphoton_filename, offset=0)
-            # xn6_train, yn6_train = read_type_data(Entanglement_num, Entanglement_filename, offset=0)
-            xn7_train, yn7_train = read_type_data(TJCM_num, TJCM_filename, offset=test_each)
-            xn8_train, yn8_train = read_type_data(JCM_num, JCM_filename, offset=test_each)
+            xn1_train, yn1_train = read_type_data(JCM_num, JCM_filename, offset=jcm_test_num)
+            xn2_train, yn2_train = read_type_data(TJCM_num, TJCM_filename, offset=tjcm_test_num)            
 
-            x_train = np.concatenate((xn7_train, xn8_train, x_train), axis=0)
-            y_train = np.concatenate((yn7_train, yn8_train, y_train), axis=0)
+            x_train = np.concatenate((xn1_train, xn2_train), axis=0)
+            y_train = np.concatenate((yn1_train, yn2_train), axis=0)
 
 
         x_train = x_train.astype('float32')
@@ -219,7 +178,6 @@ def build_combined_data2(dataset_filename, train_filename, harmonic_num, coheren
         y_train = Y_train
                   
         
-
         np.save(os.path.join(path_combined_dataset, 'x_train%d.npy'%(k+1)), y_train)
         np.save(os.path.join(path_combined_dataset, 'y_train%d.npy'%(k+1)), x_train)
         print(X_train.shape,Y_train.shape)
