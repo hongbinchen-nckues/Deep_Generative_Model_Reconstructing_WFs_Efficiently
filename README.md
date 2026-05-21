@@ -24,6 +24,10 @@
    ```
    ubuntu-drivers devices
    ```
-   
+   (2) Download the corresponding driver
+    ```
+    sudo apt update
+    sudo apt install nvidia-driver-460
+     ```
 
 ## File Directory Description
