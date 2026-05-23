@@ -14,7 +14,7 @@ from torch.optim import Adam
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 
 from scipy import integrate, interpolate
-from ResNet import ResNet152Decoder1
+from ResNet import ResNet184Decoder1
 from cmap import rgb_cmap_inverse2, rgb_cmap_inverse3, rgb_cmap, rgb_cmap_inverse, rgb_cmap2, rgb_cmap4, rgb_cmap3
 
 
@@ -188,7 +188,7 @@ def _pick_model(input_shape, channel):
         input_dim = int(input_shape)
 
     if channel == 1:
-        return DenseNetDecoder169(input_dim)
+        return ResNet184Decoder1(input_dim)
     else:
         return DenseNetDecoder264(input_dim)
 
