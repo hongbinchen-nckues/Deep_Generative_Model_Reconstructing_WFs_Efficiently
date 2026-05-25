@@ -15,8 +15,6 @@ def build_data(dataset_filename, types, num, resolution, length):
     # set save path of dataset
     osd = os.path.abspath(os.path.join(os.getcwd(), os.path.pardir))
 
-    if types == 'Entanglement':
-        data_type_filename = "distribution_Entanglement"
     if types == 'TJCM':
         data_type_filename = "new_distribution_TJCM"
     if types == 'JCM':
@@ -50,115 +48,8 @@ def build_data(dataset_filename, types, num, resolution, length):
     x, y = np.meshgrid(kx, ky)
 
 
-    for e in trange(num):
-
-          
-    # ============================================================================================
-    
-        if types == 'Entanglement':
-            # ----------------- parameter setting -----------------
-            q = random.randint(0,4)          
-            zeta = random.uniform(1, 5.0)      
-            theta = np.random.uniform(0, np.pi/2)     
-            theta2 = 0.0
-            g = 1
-            N_max = 20      
-
-
-            T_val = random.randint(0, 315) / 100.0  
-
-            def calc_Nq(q, zeta, cutoff):
-                val = 0.0
-                for n in range(cutoff):
-                    val += (zeta**(2*n)) / (factorial(n) * factorial(n + q))
-                return 1.0 / np.sqrt(val)
-
-            def calc_Cn(n, q, zeta, Nq):
-                denom = np.sqrt(factorial(n) * factorial(n + q))
-                return Nq * (zeta**n) / denom
-
-            def get_X_coeffs(T, n, q, theta):
-                alpha_n = 4*np.sqrt((n + 1) * (n + 2) * (n + q + 1) * (n + q + 2))
-                
-                eta = np.sqrt(2 * (n + 2) * (n + q + 2) + 2 * (n + 1) * (n + q + 1))
-                
-                if eta == 0:
-                    return 0.0, 0.0, 0.0, 0.0
-
-                c1 = 2 * np.cos(T * eta) / (eta**2)
-                c2 = 2 / (eta**2)
-                term1 = (n + 1) * (n + q + 1) * np.cos(theta) + 0.25 * alpha_n * np.sin(theta)
-                term2 = (n + 2) * (n + q + 2) * np.cos(theta) - 0.25 * alpha_n * np.sin(theta)
-                X1 = c1 * term1 + c2 * term2
-
-                c_sin = -np.sin(T * eta) / eta
-                term_x2 = (
-                    np.sqrt((n + 1) * (n + q + 1)) * np.cos(theta)
-                    + np.sqrt((n + 2) * (n + q + 2)) * np.sin(theta)
-                )
-                X2 = c_sin * term_x2
-                X3 = X2
-
-                term1_x4 = (n + 2) * (n + q + 2) * np.sin(theta) + 0.25 * alpha_n * np.cos(theta)
-                term2_x4 = (n + 1) * (n + q + 1) * np.sin(theta) - 0.25 * alpha_n * np.cos(theta)
-                X4 = c1 * term1_x4 + c2 * term2_x4
-
-                return X1, X2, X3, X4
-
-            def distribution_atom(x, y, theta, T, zeta, q, N_max):
-
-                Alpha_sq = x**2 + y**2
-
-                P_k = np.zeros(N_max + 5)
-                Nq_val = calc_Nq(q, zeta, N_max)
-
-                for n in range(N_max):
-                    Cn_val = calc_Cn(n, q, zeta, Nq_val)
-                    X1, X2, X3, X4 = get_X_coeffs(T, n, q, theta)
-                    prob = np.abs(Cn_val)**2
-
-                    if n < len(P_k):
-                        P_k[n] += prob * np.abs(X1)**2
-                    
-                    if n + 1 < len(P_k):
-                        P_k[n+1] += prob * (np.abs(X2)**2 + np.abs(X3)**2)
-                        
-                    if n + 2 < len(P_k):
-                        P_k[n+2] += prob * np.abs(X4)**2
-
-                A = np.zeros_like(Alpha_sq, dtype=np.float64)
-
-                prefactor = (2.0 / np.pi) * np.exp(-2.0 * Alpha_sq)
-
-                for k_idx in range(len(P_k)):
-                    if P_k[k_idx] > 1e-10:  
-                        Lk_val = genlaguerre(k_idx, 0)(4.0 * Alpha_sq)
-                        sign = 1.0 if (k_idx % 2 == 0) else -1.0
-                        A += P_k[k_idx] * sign * Lk_val
-
-                return A * prefactor
-
-            A_matrix = distribution_atom(x, y, theta, T_val, zeta, q, N_max)
-
-
-            A_main = cv2.resize(A_matrix, (256, 256))
-
-
-            A1 = simpson(A_matrix, ky, axis=0)
-            A2 = simpson(A_matrix, kx, axis=1)
-
-            X_uv = (U + V) / np.sqrt(2)
-            Y_uv = (U - V) / np.sqrt(2)
-
-            Z_uv = distribution_atom(X_uv, Y_uv, theta, T_val, zeta, q, N_max)
-            A3 = simpson(Z_uv, kv, axis=0)
-            
-            np.save(os.path.join(path_main_data_npy, '{}p0.npy'.format(index)), A_main)
-            np.save(os.path.join(path_x_data,       '{}p1.npy'.format(index)), A1)
-            np.save(os.path.join(path_y_data,       '{}p2.npy'.format(index)), A2)
-            np.save(os.path.join(path_u_data,       '{}p3.npy'.format(index)), A3)
-
-    
+    for e in trange(num):        
+   
     # ============================================================================================
 
        
