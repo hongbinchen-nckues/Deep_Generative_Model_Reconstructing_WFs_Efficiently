@@ -21,8 +21,8 @@ os.environ["TORCHINDUCTOR_ASSERT_SIZE_STRIDE"] = "0"
 #    image_num = numbers of prediction image (default = 5) must < test_data_num/7
 #    data_patch = number of divide data into training set (default = 4)
 # =============================================================================
-# build_data(dataset_filename = "npy_quantum", types = 'TJCM', num = 100, resolution = 0.00625, length = 7)
-# build_data(dataset_filename = "npy_quantum", types = 'JCM', num = 1, resolution = 0.00625, length = 7)
+build_data(dataset_filename = "npy_quantum", types = 'TJCM', num = 100, resolution = 0.00625, length = 7)
+build_data(dataset_filename = "npy_quantum", types = 'JCM', num = 1, resolution = 0.00625, length = 7)
 
 build_combined_data2(dataset_filename = "npy_quantum", train_filename = "dataset_quantum_ResNet184_test", 
                     JCM_num = 30050, TJCM_num = 30050, test_data_num = 150, split_num = 4, vmin = -0.45, vmax = 0.45, channel = 1) 
