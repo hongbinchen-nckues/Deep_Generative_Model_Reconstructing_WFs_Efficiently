@@ -16,7 +16,7 @@ The repository includes dataset generation, model training, testing, and visuali
 
 Download dataset from:
 
-https://drive.google.com/xxxxx
+https://drive.google.com/drive/folders/1scG2cVmM7QjHVKtvvdAVbMEY0Aa6BDDa?usp=sharing
 
 ## Getting Started
 
