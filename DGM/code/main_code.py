@@ -25,9 +25,7 @@ os.environ["TORCHINDUCTOR_ASSERT_SIZE_STRIDE"] = "0"
 # build_data(dataset_filename = "npy_quantum", types = 'JCM', num = 1, resolution = 0.00625, length = 7)
 
 build_combined_data2(dataset_filename = "npy_quantum", train_filename = "dataset_quantum_ResNet184_test", 
-                    harmonic_num =50, JCM_num = 30050, TJCM_num = 30050,
-                    test_data_num = 150, split_num = 4,
-                    vmin = -0.45, vmax = 0.45, channel = 1) 
+                    JCM_num = 30050, TJCM_num = 30050, test_data_num = 150, split_num = 4, vmin = -0.45, vmax = 0.45, channel = 1) 
 
 training2(dataset_filename = "dataset_quantum_ResNet184_test",  model_name = 'decoder_model_ResNet184_test', epochs = 100, batch_size =32, data_patch = 4)
 
