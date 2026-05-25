@@ -2,7 +2,7 @@ import os, torch
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
-from JCM2 import build_data
+from WF import build_data
 from data_merge import build_combined_data2
 from train_one import training2, prediction2, test_comparison2
 from cmap import rgb_cmap, rgb_cmap_inverse
