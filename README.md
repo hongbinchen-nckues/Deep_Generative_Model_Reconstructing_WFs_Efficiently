@@ -16,7 +16,7 @@ The repository includes dataset generation, model training, testing, and visuali
 
 Download dataset from:
 
-[https://drive.google.com/drive/folders/1scG2cVmM7QjHVKtvvdAVbMEY0Aa6BDDa?usp=sharing](https://doi.org/10.5281/zenodo.20391988)
+(https://doi.org/10.5281/zenodo.20391988)
 
 ## Getting Started
 
