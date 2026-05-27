@@ -16,7 +16,7 @@ def build_data(dataset_filename, types, num, resolution, length):
     osd = os.path.abspath(os.path.join(os.getcwd(), os.path.pardir))
 
     if types == 'TMJCM':
-        data_type_filename = "new_distribution_TMJCM"
+        data_type_filename = "distribution_TMJCM"
     if types == 'MJCM':
         data_type_filename = "distribution_MJCM"
 
