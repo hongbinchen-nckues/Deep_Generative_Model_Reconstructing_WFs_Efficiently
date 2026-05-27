@@ -16,9 +16,10 @@ The repository includes dataset generation, model training, testing, and visuali
 
 Download dataset from:
 - MJCM
-https://doi.org/10.5281/zenodo.20391988
+-https://doi.org/10.5281/zenodo.20391988
 
 - TMJCM
+-https://doi.org/10.5281/zenodo.20404806
 
 ## Getting Started
 
