@@ -110,7 +110,7 @@ Currently supported:
 ```python
 build_data(
     dataset_filename="npy_quantum",
-    types="TMJCM",
+    types="MJCM",
     num=30050,
     resolution=0.00625,
     length=7
