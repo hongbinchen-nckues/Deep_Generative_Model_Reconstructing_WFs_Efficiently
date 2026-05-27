@@ -15,10 +15,10 @@ def build_data(dataset_filename, types, num, resolution, length):
     # set save path of dataset
     osd = os.path.abspath(os.path.join(os.getcwd(), os.path.pardir))
 
-    if types == 'TJCM':
-        data_type_filename = "new_distribution_TJCM"
-    if types == 'JCM':
-        data_type_filename = "distribution_JCM"
+    if types == 'TMJCM':
+        data_type_filename = "new_distribution_TMJCM"
+    if types == 'MJCM':
+        data_type_filename = "distribution_MJCM"
 
     main_distribution_npy_filename = 'main_data'
     x_distribution_filename = 'x_data'
@@ -53,7 +53,7 @@ def build_data(dataset_filename, types, num, resolution, length):
     # ============================================================================================
 
        
-        if types == 'TJCM':
+        if types == 'TMJCM':
             mag_alpha = random.randint(0, 150) / 100  
             phi_alpha = np.random.uniform(0.0, 2 * np.pi)  
             alpha = mag_alpha * np.exp(1j * phi_alpha)    
@@ -237,7 +237,7 @@ def build_data(dataset_filename, types, num, resolution, length):
 
             
             # ---------- Wigner function Marginal ----------
-            def Distribution_TJCM(kx, ky, T, m, k, N_cutoff, C_nm):
+            def Distribution_TMJCM(kx, ky, T, m, k, N_cutoff, C_nm):
                 result = np.zeros_like(kx, dtype=np.float64)
                 chi = kx + 1j * ky
                 abs_chi2 = np.abs(chi) ** 2
@@ -306,7 +306,7 @@ def build_data(dataset_filename, types, num, resolution, length):
 
                 return np.asarray(result, dtype=np.float64)
                         
-            B_matrix = Distribution_TJCM(x, y, T, m, k, N_cutoff, C_nm)
+            B_matrix = Distribution_TMJCM(x, y, T, m, k, N_cutoff, C_nm)
 
             G1 = simpson(B_matrix, y, axis=0)
 
@@ -323,7 +323,7 @@ def build_data(dataset_filename, types, num, resolution, length):
             np.save(os.path.join(path_y_data, '{}p2.npy'.format(index)), G2)
             np.save(os.path.join(path_u_data, '{}p3.npy'.format(index)), G3)
     # ============================================================================================
-        if types == 'JCM':
+        if types == 'MJCM':
             mag_alpha = random.randint(0, 150)/100          
             phi_alpha = np.random.uniform(0.0, 2*np.pi)      
             alpha = mag_alpha * np.exp(1j * phi_alpha)       
@@ -372,7 +372,7 @@ def build_data(dataset_filename, types, num, resolution, length):
                     return lambda_e * (term_plus + epsilon * term_minus)
 
             # ========= 計算 Wigner Function ==========
-            def Wigner_function_JCM(x, y, alpha, epsilon, n, T, k, cutoff, lambda_e, C_m_r0):
+            def Wigner_function_MJCM(x, y, alpha, epsilon, n, T, k, cutoff, lambda_e, C_m_r0):
 
                     J = np.zeros_like(x, dtype=np.float64) 
                     fact = [factorial(i) for i in range(cutoff + k + 5)]
@@ -419,13 +419,13 @@ def build_data(dataset_filename, types, num, resolution, length):
                     J *= np.exp(-abs_chi2) / np.pi
                     return J
                         
-            J = Wigner_function_JCM(x, y, alpha, epsilon, n, T, k, cutoff, lambda_e, C_m_r0)
+            J = Wigner_function_MJCM(x, y, alpha, epsilon, n, T, k, cutoff, lambda_e, C_m_r0)
             J = cv2.resize(J, (256, 256))
             J = np.asarray(J, dtype=np.float64)
             if not np.isfinite(J).all():
                 continue
 
-            def Distribution_JCM(kx, ky, alpha, epsilon, n, T, k, cutoff, lambda_e, C_m_r0):
+            def Distribution_MJCM(kx, ky, alpha, epsilon, n, T, k, cutoff, lambda_e, C_m_r0):
                     J = np.zeros_like(kx, dtype=np.float64)
                     fact = [factorial(i) for i in range(cutoff + k + 5)]
                     
@@ -470,7 +470,7 @@ def build_data(dataset_filename, types, num, resolution, length):
                     J *= np.exp(-abs_chi2) / np.pi
                     return J
 
-            J_matrix = Distribution_JCM(x, y, alpha, epsilon, n, T, k, cutoff, lambda_e, C_m_r0)
+            J_matrix = Distribution_MJCM(x, y, alpha, epsilon, n, T, k, cutoff, lambda_e, C_m_r0)
             J_matrix = np.asarray(J_matrix, dtype=np.float64)
             if (not np.isfinite(J_matrix).all()):
                 continue  
@@ -481,7 +481,7 @@ def build_data(dataset_filename, types, num, resolution, length):
                 continue
             Xuv = (U + V) / np.sqrt(2)
             Yuv = (U - V) / np.sqrt(2)
-            Zuv = Wigner_function_JCM(Xuv, Yuv, alpha, epsilon, n, T, k, cutoff, lambda_e, C_m_r0)
+            Zuv = Wigner_function_MJCM(Xuv, Yuv, alpha, epsilon, n, T, k, cutoff, lambda_e, C_m_r0)
             Zuv = np.asarray(Zuv, dtype=np.float64)
             if not np.isfinite(Zuv).all():
                 continue
