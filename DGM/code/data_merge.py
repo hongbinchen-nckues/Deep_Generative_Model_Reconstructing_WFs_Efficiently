@@ -4,7 +4,7 @@ from sklearn.utils import shuffle
 import os
 from cmap import rgb_cmap2
     
-def build_combined_data2(dataset_filename, train_filename, TJCM_num, JCM_num, test_data_num = 150, split_num = 8, vmin = -0.01, vmax = 0.045, channel = 1):
+def build_combined_data2(dataset_filename, train_filename, TMJCM_num, MJCM_num, test_data_num = 150, split_num = 8, vmin = -0.01, vmax = 0.045, channel = 1):
 
     def read_type_data(distribution_num, type_filename, offset=0):
         x_train = list([])
@@ -42,8 +42,8 @@ def build_combined_data2(dataset_filename, train_filename, TJCM_num, JCM_num, te
 
     # set load path of dataset
     osd = os.path.abspath(os.path.join(os.getcwd(), os.path.pardir))   
-    TJCM_filename ="full_distribution_TJCM"
-    JCM_filename = "distribution_JCM"
+    TMJCM_filename ="full_distribution_TMJCM"
+    MJCM_filename = "distribution_MJCM"
 
     
     main_distribution_filename = 'main_data'
@@ -61,31 +61,31 @@ def build_combined_data2(dataset_filename, train_filename, TJCM_num, JCM_num, te
     if os.path.exists(path_combined_dataset) == False:     
         os.mkdir(path_combined_dataset)
 
-    print("TJCM data number : ", TJCM_num)
-    print("JCM data number : ", JCM_num)
+    print("TMJCM data number : ", TMJCM_num)
+    print("MJCM data number : ", MJCM_num)
 
 
     # =========================
     # First, create a test set before training.
-    # If both TJCM and JCM are used, split evenly (test_data_num // 2 each).
+    # If both TMJCM and MJCM are used, split evenly (test_data_num // 2 each).
     # If only one type is used, take all test_data_num from that type.
     # =========================
 
-    use_tjcm = (TJCM_num > 0)
-    use_jcm  = (JCM_num  > 0)
+    use_tmjcm = (TMJCM_num > 0)
+    use_mjcm  = (MJCM_num  > 0)
 
-    if use_tjcm and use_jcm:
-        tjcm_test_num = test_data_num // 2
-        jcm_test_num  = test_data_num - tjcm_test_num
-    elif use_tjcm:
-        tjcm_test_num = test_data_num
-        jcm_test_num  = 0
-    elif use_jcm:
-        tjcm_test_num = 0
-        jcm_test_num  = test_data_num
+    if use_tmjcm and use_mjcm:
+        tmjcm_test_num = test_data_num // 2
+        mjcm_test_num  = test_data_num - tmjcm_test_num
+    elif use_tmjcm:
+        tmjcm_test_num = test_data_num
+        mjcm_test_num  = 0
+    elif use_mjcm:
+        tmjcm_test_num = 0
+        mjcm_test_num  = test_data_num
     else:
-        tjcm_test_num = 0
-        jcm_test_num  = 0
+        tmjcm_test_num = 0
+        mjcm_test_num  = 0
 
     def read_test_data(index_list, type_filename):
         x_test = []
@@ -112,19 +112,19 @@ def build_combined_data2(dataset_filename, train_filename, TJCM_num, JCM_num, te
 
     x_test_parts, y_test_parts, label_list = [], [], []
 
-    if tjcm_test_num > 0:
-        tjcm_idx = np.arange(0, tjcm_test_num)
-        tjcm_x_test, tjcm_y_test = read_test_data(tjcm_idx, TJCM_filename)
-        x_test_parts.append(tjcm_x_test)
-        y_test_parts.append(tjcm_y_test)
-        label_list += [0] * tjcm_test_num
+    if tmjcm_test_num > 0:
+        tmjcm_idx = np.arange(0, tmjcm_test_num)
+        tmjcm_x_test, tmjcm_y_test = read_test_data(tmjcm_idx, TMJCM_filename)
+        x_test_parts.append(tmjcm_x_test)
+        y_test_parts.append(tmjcm_y_test)
+        label_list += [0] * tmjcm_test_num
 
-    if jcm_test_num > 0:
-        jcm_idx = np.arange(0, jcm_test_num)
-        jcm_x_test, jcm_y_test = read_test_data(jcm_idx, JCM_filename)
-        x_test_parts.append(jcm_x_test)
-        y_test_parts.append(jcm_y_test)
-        label_list += [1] * jcm_test_num
+    if mjcm_test_num > 0:
+        mjcm_idx = np.arange(0, mjcm_test_num)
+        mjcm_x_test, mjcm_y_test = read_test_data(mjcm_idx, MJCM_filename)
+        x_test_parts.append(mjcm_x_test)
+        y_test_parts.append(mjcm_y_test)
+        label_list += [1] * mjcm_test_num
 
     if len(x_test_parts) > 0:
         x_test = np.concatenate(x_test_parts, axis=0)
@@ -144,7 +144,7 @@ def build_combined_data2(dataset_filename, train_filename, TJCM_num, JCM_num, te
 
         print("MJCM/TMJCM test set done")
     else:
-        print("Skip MJCM/TMJCM test set because TJCM_num = 0 and JCM_num = 0")
+        print("Skip MJCM/TMJCM test set because TMJCM_num = 0 and MJCM_num = 0")
 
     
     x_data_num = 0
@@ -154,14 +154,14 @@ def build_combined_data2(dataset_filename, train_filename, TJCM_num, JCM_num, te
 #         1. choose states
 # =============================================================================
 
-        if TJCM_num == 0 :
-            xn1_train, yn1_train = read_type_data(JCM_num, JCM_filename,  offset=jcm_test_num)
+        if TMJCM_num == 0 :
+            xn1_train, yn1_train = read_type_data(MJCM_num, MJCM_filename,  offset=mjcm_test_num)
 
             x_train = xn1_train
             y_train = yn1_train
         else:
-            xn1_train, yn1_train = read_type_data(JCM_num, JCM_filename, offset=jcm_test_num)
-            xn2_train, yn2_train = read_type_data(TJCM_num, TJCM_filename, offset=tjcm_test_num)            
+            xn1_train, yn1_train = read_type_data(MJCM_num, MJCM_filename, offset=mjcm_test_num)
+            xn2_train, yn2_train = read_type_data(TMJCM_num, TMJCM_filename, offset=tmjcm_test_num)            
 
             x_train = np.concatenate((xn1_train, xn2_train), axis=0)
             y_train = np.concatenate((yn1_train, yn2_train), axis=0)
