@@ -272,6 +272,6 @@ If successful, the installed PyTorch version and CUDA availability will be displ
 ## File Directory Description
 
 
-# License
+## License
 
-This project is licensed under the GNU GPL v3 - see the LICENSE file for details.
+This project is licensed under the GNU General Public License v3.0 or later. See the [LICENSE](LICENSE) file for details.
