@@ -270,3 +270,8 @@ python -c "import torch; print(torch.cuda.is_available())"
 
 If successful, the installed PyTorch version and CUDA availability will be displayed.
 ## File Directory Description
+
+
+# License
+
+This project is licensed under the GNU GPL v3 - see the LICENSE file for details.
