@@ -69,7 +69,7 @@ project/
 ├── prediction/
 │
 ├── README.md
-└── USER_GUIDE.md
+└── USER_GUIDE_DGM.md
 ```
 
 ---
