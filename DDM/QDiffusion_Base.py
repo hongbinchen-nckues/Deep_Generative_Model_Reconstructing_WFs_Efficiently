@@ -593,7 +593,6 @@ def lr_lambda(current_step):
 
 # --- Data load info ---
 image_label = "01"
-basic_folder = "QGAN"
 Q_type = ["TJCM"]   #  ["harmonic","squeezed","coherent","cat"]
 
 
@@ -611,8 +610,12 @@ if num_of_data != None:
     add_name += f"_NofD{num_of_data}"
 add_tage = "test"
 add_name += add_tage                    # ------------------------ add tage -------------------------
-save_path =  f"./{basic_folder}/DiffusionModel/{add_name}.pt"
-image_folder = f"./{basic_folder}/DiffusionGenerateImage/{add_name}"
+save_path =  f"./DiffusionModel/{add_name}.pt"
+image_folder = f"./DiffusionGenerateImage/{add_name}"
+if os.path.exists("./DiffusionModel") == False:
+    os.mkdir("./DiffusionModel")
+if os.path.exists("./DiffusionGenerateImage") == False:
+    os.mkdir("./DiffusionGenerateImage")
 if os.path.exists(image_folder) == False:
     os.mkdir(image_folder)
 
@@ -630,8 +633,8 @@ if __name__ == "__main__":
     # --- Check if VAE Model Exists, if not, training VAE Model ---
     if UseVAE:
         VAE = VAE_ForDiffusionModel(in_channels=1, latent_channels=1, initial_channels=64).to(device)
-        VAE_save_path =  f"./{basic_folder}/DiffusionModel/VAE_{add_name}.pt"
-        VAE_image_folder = f"./{basic_folder}/DiffusionGenerateImage/VAE_{add_name}"
+        VAE_save_path =  f"./DiffusionModel/VAE_{add_name}.pt"
+        VAE_image_folder = f"./DiffusionGenerateImage/VAE_{add_name}"
         if os.path.exists(VAE_image_folder) == False:
             os.mkdir(VAE_image_folder)
 
