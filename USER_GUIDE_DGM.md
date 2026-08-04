@@ -51,28 +51,22 @@ which automatically performs the complete workflow.
 # 2. Project Structure
 
 ```text
-Deep_Generative_Model_Reconstructing_WFs_Efficiently/
-│
-├── DGM/
-│   │
-│   ├── code/
-│   │   ├── main_code.py
-│   │   ├── WF.py
-│   │   ├── train.py
-│   │   ├── data_merge.py
-│   │   ├── ResNet.py
-│   │   └── cmap.py
-│   │
-│   ├── npy_quantum/
-│   │   ├── distribution_JCM/
-│   │   └── distribution_TJCM/
-│   │
-│   └── test_visualization_Wigner/
-│
-│
-├── LICENSE
-├── README.md
-└── USER_GUIDE_DGM.md
+─ DGM/
+  │
+  ├── code/
+  │   ├── main_code.py
+  │   ├── WF.py
+  │   ├── train.py
+  │   ├── data_merge.py
+  │   ├── ResNet.py
+  │   └── cmap.py
+  │
+  ├── npy_quantum/
+  │   ├── distribution_JCM/
+  │   └── distribution_TJCM/
+  │
+  └── test_visualization_Wigner/
+
 ```
 
 ---
