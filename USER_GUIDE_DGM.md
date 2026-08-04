@@ -68,11 +68,7 @@ Deep_Generative_Model_Reconstructing_WFs_Efficiently/
 │   │   └── full_distribution_TJCM/
 │   │
 │   └── test_visualization_Wigner/
-│       ├── test_comparison_ALL_TEST_0.png
-│       ├── test_comparison_ALL_TEST_1.png
-│       ├── test_comparison_ALL_TEST_2.png
-│       ├── test_comparison_ALL_TEST_3.png
-│       └── test_comparison_ALL_TEST_4.png
+│
 │
 ├── LICENSE
 ├── README.md
