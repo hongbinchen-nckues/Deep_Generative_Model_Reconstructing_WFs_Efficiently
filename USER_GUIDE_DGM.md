@@ -65,7 +65,7 @@ Deep_Generative_Model_Reconstructing_WFs_Efficiently/
 │   │
 │   ├── npy_quantum/
 │   │   ├── distribution_JCM/
-│   │   └── full_distribution_TJCM/
+│   │   └── distribution_TJCM/
 │   │
 │   └── test_visualization_Wigner/
 │
