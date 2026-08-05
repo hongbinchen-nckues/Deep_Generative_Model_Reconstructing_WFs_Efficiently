@@ -11,7 +11,7 @@ The repository includes:
 - [1. Overall Workflow](#1-overall-workflow)
 - [2. Project Structure](#2-project-structure)
 - [3. Data Generation and Merging](#3-data-generation-and-merging)
-- [4. Model Training and Testing](#4-model-training-and-testing)
+- [4. Model Training and Testing Prediction](#4-model-training-and-testing-prediction)
 
 ---
 # 1. Overall Workflow
@@ -60,7 +60,7 @@ See in DGM_user_guide.md.
 
 ---
 
-# 4. Model Training and Testing
+# 4. Model Training and Test Prediction
 
 Run the code in Diffusion_Base.py to train the model.
-You can check the test prediction result in DiffusionGenerateImage floder.
+You can check the test prediction result in DiffusionGenerateImage folder.
