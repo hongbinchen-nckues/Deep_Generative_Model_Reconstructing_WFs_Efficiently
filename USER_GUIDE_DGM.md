@@ -51,25 +51,22 @@ which automatically performs the complete workflow.
 # 2. Project Structure
 
 ```text
-project/
-│
-├── main_code.py
-├── WF.py
-├── train.py
-├── data_merge.py
-├── ResNet.py
-├── cmap.py
-│
-├── npy_quantum/
-│   ├── distribution_JCM/
-│   └── distribution_TJCM/
-│
-├── dataset_quantum_ResNet184/
-│
-├── prediction/
-│
-├── README.md
-└── USER_GUIDE_DGM.md
+─ DGM/
+  │
+  ├── code/
+  │   ├── main_code.py
+  │   ├── WF.py
+  │   ├── train.py
+  │   ├── data_merge.py
+  │   ├── ResNet.py
+  │   └── cmap.py
+  │
+  ├── npy_quantum/
+  │   ├── distribution_JCM/
+  │   └── distribution_TJCM/
+  │
+  └── test_visualization_Wigner/
+
 ```
 
 ---
