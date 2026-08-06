@@ -1,4 +1,4 @@
-This document provides a detailed usage guide for the Deep Diffusion Model (DGM) framework used for reconstructing quantum Wigner functions from experimentally accessible marginal distributions.
+This document provides a usage guide for the Deep Diffusion Model (DDM) framework used for reconstructing quantum Wigner functions from experimentally accessible marginal distributions.
 
 The repository includes:
 
@@ -56,7 +56,7 @@ prediction / visualization
 
 # 3. Data Generation and Merging
 
-See in DGM_user_guide.md.
+See DGM_user_guide.md.
 
 ---
 
