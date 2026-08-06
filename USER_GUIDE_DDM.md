@@ -1,0 +1,66 @@
+This document provides a usage guide for the Deep Diffusion Model (DDM) framework used for reconstructing quantum Wigner functions from experimentally accessible marginal distributions.
+
+The repository includes:
+
+- Deep diffusion model training
+- Prediction and reconstruction
+
+---
+# Table of Contents
+
+- [1. Overall Workflow](#1-overall-workflow)
+- [2. Project Structure](#2-project-structure)
+- [3. Data Generation and Merging](#3-data-generation-and-merging)
+- [4. Model Training and Testing Prediction](#4-model-training-and-testing-prediction)
+
+---
+# 1. Overall Workflow
+
+The complete workflow of this project is:
+
+```text
+WF.py (On DGM Folder)
+   ↓
+data_merge.py (On DGM Folder)
+   ↓
+Diffusion_Base.py
+   ↓
+prediction / visualization
+```
+
+---
+
+# 2. Project Structure
+
+```text
+─ DDM/
+  │
+  ├── DiffusionGenerateImage/
+  │
+  ├── DiffusionModel/
+  │
+  ├── Code/
+  │   ├── ClassicalModel.py
+  │   ├── Function.py
+  │   └── Load_State.py
+  │
+  ├── npy_quantum/
+  │   ├── distribution_JCM/
+  │   └── distribution_TJCM/
+  │
+  └── Diffusion_Base.py
+
+```
+
+---
+
+# 3. Data Generation and Merging
+
+See DGM_user_guide.md.
+
+---
+
+# 4. Model Training and Test Prediction
+
+Run the code in Diffusion_Base.py to train the model.
+You can check the test prediction result in DiffusionGenerateImage folder.
