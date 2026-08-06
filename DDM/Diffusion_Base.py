@@ -582,8 +582,8 @@ diff_step = 1000
 eta = 0           # add eta*noise at each step
 range_scale = 1
 num_frequency_encoding = 6
-warmup_steps = 10000
-total_steps = 500000
+warmup_steps = 1000
+total_steps = 50000
 def lr_lambda(current_step):
     if current_step < warmup_steps:
         return current_step / warmup_steps

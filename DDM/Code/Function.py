@@ -224,8 +224,10 @@ def CompareOT(Y, y_pred, three_axis_gt, three_axis_pred, vmin, vmax, step = 7, p
     '''
         Y, y_pred, three_axis_gt, three_axis_pred -> numpy
     '''
-    front_path = "./QGAN/Output/OT"
-    save_root = "./QGAN/Output/OT"
+    if os.path.exists("./DiffusionGenerateImage/OT") == False:
+        os.mkdir("./DiffusionGenerateImage/OT")
+    front_path = "./DiffusionGenerateImage/OT"
+    save_root = "./DiffusionGenerateImage/OT"
     save_tag = "ALL_TEST"
     
     if len(three_axis_gt.shape) == 3:
